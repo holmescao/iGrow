@@ -1,0 +1,3 @@
+data/ChallengeOnReal/Automatoes_wursimres.csv
+data/ChallengeOnReal/HarvestAndIncomeAutomatoes.xlsx
+data/ChallengeOnReal/Automatoes_stems.npy
