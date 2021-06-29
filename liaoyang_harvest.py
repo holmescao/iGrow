@@ -263,9 +263,9 @@ if __name__ == "__main__":
                         help='start date of planting.')
     parser.add_argument('--endDate', default="2020-07-13",
                         help='end date of planting.')
-    parser.add_argument('--experiment_gh', type=list, default=[14, 15, 25, 27, 28],
+    parser.add_argument('--control_group', type=list, default=[1, 2],
                         help='ids of all green house.')
-    parser.add_argument('--control_group', type=list, default=[7, 13],
+    parser.add_argument('--experiment_gh', type=list, default=[3, 4, 5, 6, 7],
                         help='ids of all green house.')
     parser.add_argument('--rmb2euro', type=float, default=0.1276,
                         help="rate of rmb to euro")

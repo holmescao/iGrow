@@ -164,7 +164,7 @@ def harvest_analysis(args, harvest_dir):
     m2_to_Mu = 667
     production = pd.read_csv(harvest_dir + 'production.csv')
     production = production.values[:, 1:] / m2_to_Mu
-    Income = pd.read_csv(harvest_dir + 'adjust_Income.csv')
+    Income = pd.read_csv(harvest_dir + 'Income.csv')
     Income = Income.values[:, 1:] / m2_to_Mu * args.rmb2euro
 
     ctrl_prod[-len(production):, :] = np.nancumsum(production[:, :2], axis=0)
@@ -187,9 +187,9 @@ if __name__ == "__main__":
                         help='start date of planting.')
     parser.add_argument('--endDate', default="2020-07-13",
                         help='end date of planting.')
-    parser.add_argument('--experiment_gh', type=list, default=[14, 15, 25, 27, 28],
+    parser.add_argument('--control_group', type=list, default=[1,2],
                         help='ids of all green house.')
-    parser.add_argument('--control_group', type=list, default=[7, 13],
+    parser.add_argument('--experiment_gh', type=list, default=[3,4,5,6,7],
                         help='ids of all green house.')
     parser.add_argument('--rmb2euro', type=float, default=0.1276,
                         help="rate of rmb to euro")

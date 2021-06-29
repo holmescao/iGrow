@@ -1,13 +1,3 @@
-'''
-Author: your name
-Date: 2021-06-12 23:12:32
-LastEditTime: 2021-06-25 17:39:31
-LastEditors: Please set LastEditors
-Description: In User Settings Edit
-FilePath: /SmartAgricultureSolution-iGrow/NMI/evaluate_simulator.py
-'''
-
-
 import pickle
 import pandas as pd
 import numpy as np

@@ -1,11 +1,3 @@
-'''
-Author: your name
-Date: 2021-06-12 23:12:56
-LastEditTime: 2021-06-28 21:15:51
-LastEditors: Please set LastEditors
-Description: In User Settings Edit
-FilePath: /NMI/liaoyang_analysis.py
-'''
 import matplotlib as mpl
 import seaborn as sns
 import argparse
@@ -67,9 +59,9 @@ def Figure6(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--experiment_gh', type=list, default=[14, 15, 25, 27, 28],
+    parser.add_argument('--control_group', type=list, default=[1, 2],
                         help='ids of all green house.')
-    parser.add_argument('--control_group', type=list, default=[7, 13],
+    parser.add_argument('--experiment_gh', type=list, default=[3, 4, 5, 6, 7],
                         help='ids of all green house.')
     parser.add_argument('--fig_save_dir', type=str, default='result/figure6/gh_sensor/',
                         help='directory to save figures.')
