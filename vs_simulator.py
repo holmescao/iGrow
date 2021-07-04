@@ -237,7 +237,7 @@ def show_figure3(baseline,
 
         handles, labels = ax.get_legend_handles_labels()
         ax.legend(handles, labels, bbox_to_anchor=(0.5, -0.25), loc='upper center',
-                  ncol=2, framealpha=0, fancybox=False, fontsize=16)
+                  ncol=2, framealpha=0, fancybox=False, fontsize=12)
 
         mkdir(save_fig_dir)
         plt.savefig(os.path.join(save_fig_dir, 'figure3_(%d).png' % (i+1)),

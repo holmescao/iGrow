@@ -1,3 +1,11 @@
+'''
+Author: your name
+Date: 2021-06-12 23:12:32
+LastEditTime: 2021-07-04 22:49:31
+LastEditors: Please set LastEditors
+Description: In User Settings Edit
+FilePath: /SmartAgricultureSolution-iGrow/evaluate_simulator.py
+'''
 import pickle
 import pandas as pd
 import numpy as np
@@ -55,7 +63,7 @@ def Table3(args):
 
     columns = ['PAR', 'AirT', 'AirRh', 'AirCO2',
                'LAI', 'PlantLoad', ' NetGrouwth', 'FW']
-    save_dir = args.base_tmp_folder+'/table3/'
+    save_dir = args.base_tmp_folder + '/table3/%s/' % args.model_version
     mkdir(save_dir)
 
     save_path = save_dir+'R2_of_per_cache.csv'
@@ -137,7 +145,7 @@ def Table3(args):
         if os.path.exists(save_path):
             ori_df = pd.read_csv(save_path)
             df = ori_df.append(df)
-        df.to_csv(save_path, float_format='%.2f', index=False)
+        df.to_csv(save_path, float_format='%.3f', index=False)
 
         # net1
         PAR_R2.append(r2_PAR)
@@ -174,7 +182,7 @@ def Table3(args):
     Table3_df = pd.DataFrame([goodness_of_simulator],
                              columns=columns+['score'])
     Table3_df.to_csv(save_dir+'R2_of_simulator.csv',
-                     float_format='%.2f', index=False)
+                     float_format='%.3f', index=False)
     print("mean R2:")
     print(Table3_df.mean(axis=0))
 
@@ -182,9 +190,9 @@ def Table3(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--base_tmp_folder", default="./result", type=str)
-    parser.add_argument("--model_version", default="incremental", type=str)
+    parser.add_argument("--model_version", default="baseline", type=str)
     parser.add_argument("--traj_test_files",
-                        default="./input/test.txt", type=str)
+                        default="./input/test-sim.txt", type=str)
     parser.add_argument("--DAY_IN_LIFE_CYCLE",
                         default=160, type=int)
     args = parser.parse_args()
