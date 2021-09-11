@@ -2,13 +2,13 @@ setting_train =\
     {
         "settings":
         {
-            "parallel": "true",
+            "parallel": "false",
         },
         "params_info":
         {
             "seed": 0,
             "NIND": 20,
-            "MAXGEN": 100000,
+            "MAXGEN": 50000,
             "XOVR": 0.3,
             "LINKDAY": 1,
         },
