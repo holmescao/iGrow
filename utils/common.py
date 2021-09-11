@@ -1,11 +1,3 @@
-'''
-Author: your name
-Date: 2021-06-12 23:38:45
-LastEditTime: 2021-06-12 23:39:03
-LastEditors: Please set LastEditors
-Description: In User Settings Edit
-FilePath: /NMI/utils/common.py
-'''
 import pickle
 import os
 
@@ -16,5 +8,11 @@ def mkdir(file_dir):
 
 
 def save_curve(obj, save_path):
-    with open(save_path, 'w'):
-        pickle.dumps(obj)
+    with open(save_path, 'wb') as fo:
+        pickle.dump(obj, fo)
+
+
+def load_curve(save_path):
+    with open(save_path, 'rb') as fo:
+        curve = pickle.load(fo, encoding='bytes')
+    return curve

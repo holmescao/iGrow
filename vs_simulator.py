@@ -10,7 +10,7 @@ import torch
 import gym
 
 from TenSim.utils.data_reader import TomatoDataset
-from TenSim.simulator_gpu import PredictModel
+from TenSim.simulator import PredictModel
 from utils.common import mkdir, save_curve
 from utils.plt_params import plt_fig_params, set_day_xtick
 
@@ -115,9 +115,9 @@ def simOurModel(period_action, ten_env, CropParams):
                 'heatCost': [],
                 'laborCost': []}
 
-    # 仿真整个周期，并获取最终reward
     while not done:
-        a = period_action[day*dims: (day+1)*dims, :]  # 获取1天的策略
+        a = period_action[day*dims: (day+1)*dims, :]
+
         a = a.reshape((-1), order='F')
         _, r, done, ec = ten_env.step(a)
         day += 1
@@ -140,13 +140,12 @@ def show_figure3(baseline,
     # fig, axes
     mpl.rcParams.update(plt_fig_params)
 
-    # 更新参数
-    props = {0: {"ylabel": "euro / m$^2$", "ylim": [-25, 10]},
-             1: {"ylabel": "error", }}
+    props = {0: {"ylabel": "Euro/m$^2$", "ylim": [-25, 10]},
+             1: {"ylabel": "Error", }}
     x_ticks_interval = {0: 4, 1: 4, 2: 4}
 
     curve_name = ['Groundtruth', 'Wur simulator',
-                  'Baseline model', 'Incremental model']
+                  'Baseline simulator', 'Incremental simulator']
     color_map = {curve_name[0]: cm.autumn(0),
                  curve_name[1]: cm.viridis(0.6),
                  curve_name[2]: cm.cool(0.3),
@@ -229,17 +228,18 @@ def show_figure3(baseline,
 
         # legend
         ax = fig.axes[0]
-        # handles, labels = ax.get_legend_handles_labels()
-        # ax.legend(handles, labels, bbox_to_anchor=(0.5, -0.23), loc='upper left',
-        #           ncol=2, framealpha=0, fancybox=False, fontsize=20)
-        # plt.subplots_adjust(left=0.1, bottom=0.9, right=0.95,
-        #                     top=1, wspace=0.4)
+        handles, labels = ax.get_legend_handles_labels()
+        ax.legend(handles, labels, bbox_to_anchor=(0.5, -0.23), loc='upper left',
+                  ncol=2, framealpha=0, fancybox=False, fontsize=18)
+        plt.subplots_adjust(left=0.1, bottom=0.9, right=0.95,
+                            top=1, wspace=0.4)
 
         handles, labels = ax.get_legend_handles_labels()
         ax.legend(handles, labels, bbox_to_anchor=(0.5, -0.25), loc='upper center',
-                  ncol=2, framealpha=0, fancybox=False, fontsize=12)
+                  ncol=2, framealpha=0, fancybox=False, fontsize=18)
 
         mkdir(save_fig_dir)
+        # plt.savefig(os.path.join(save_fig_dir, 'figure3_(%d).png' % (i+1)),)
         plt.savefig(os.path.join(save_fig_dir, 'figure3_(%d).png' % (i+1)),
                     bbox_inches='tight')
         plt.close()

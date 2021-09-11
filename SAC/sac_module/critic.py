@@ -3,12 +3,11 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
-from SAC.sac_module import utils
+import SAC.sac_module.utils as utils
 
 
 class DoubleQCritic(nn.Module):
     """Critic network, employes double Q-learning."""
-
     def __init__(self, obs_dim, action_dim, hidden_dim, hidden_depth):
         super().__init__()
 

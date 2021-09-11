@@ -1,13 +1,10 @@
 import pickle
-import os
-import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from gym.spaces import Box
 import gym
-from sklearn.metrics import mean_squared_error
 
 gym.logger.set_level(40)
 torch.set_num_threads(1)
@@ -38,14 +35,15 @@ class Net(nn.Module):
 
 
 class Economic:
-    def __init__(self, dayAction, dayState, dayReward):
+    def __init__(self, dayAction, dayState, dayReward, dayCrop):
         self.dayAction = dayAction  # [temp, co2, illu, irri]
         self.dayState = dayState  # [AirT, AirRH, Airppm]
         self.dayReward = dayReward  # [FW]
+        self.dayCrop = dayCrop  # [stem]
 
     @property
     def cal_economic(self):
-        # 累计经济
+
         gains = self.cal_gains
         elecCost = self.elec_cost
         co2Cost = self.co2_cost
@@ -67,7 +65,9 @@ class Economic:
 
     @property
     def cal_gains(self):
+        # price = 3.5
         price = 3.185
+        # price = 3.1
         # price = 2.94
         return self.dayReward[0] * price
 
@@ -76,31 +76,12 @@ class Economic:
         lmp_use = self.dayAction[:, 2]
         days = len(lmp_use) // 24
 
-        power = 185
-        bias = 2.92
-
-        on = []
-        if lmp_use[0] > 0:
-            on.append(0)
-        for h in range(1, 24):
-            if lmp_use[h] > 0.01 and lmp_use[h - 1] == 0.0:
-                on.append(h)
-        if len(on) >= 1:
-            lower = bias * 0.04 * power / 1000
-            upper = bias * 0.08 * power / 1000
-            on = np.array(on)
-            on = np.where((on < 23) & (on >= 7), upper, lower)
-        cost_on = np.sum(on)
-
-        total = sum(lmp_use)
-        if total < 0.5 and len(on) <= 2:
-            power = 0
-            cost_on = 0
+        power = 185 / 2.1
 
         price = np.array(([0.04] * 7 + [0.08] * 16 + [0.04] * 1) * days)
         cost = np.sum(np.array(lmp_use) * price * power / 1000)
 
-        return cost + cost_on
+        return cost
 
     @property
     def co2_cost(self):
@@ -138,7 +119,7 @@ class Economic:
 
     @property
     def labor_cost(self):
-        stems = 3.9
+        stems = self.dayCrop[0]
         price = 0.0085
         cost = stems * price
 
@@ -146,6 +127,7 @@ class Economic:
 
 
 class PredictModel(gym.Env):
+
     def __init__(self,
                  model1_dir,
                  model2_dir,
@@ -182,10 +164,9 @@ class PredictModel(gym.Env):
 
         self.full_weather = np.load(weather_dir)
 
-        # 重置环境
         self.reset()
 
-        self._max_episode_steps = 140
+        self._max_episode_steps = 166
 
     @property
     def observation_space(self):
@@ -206,28 +187,31 @@ class PredictModel(gym.Env):
         return Box(low=low, high=high, dtype=np.float32)
 
     def get_outside_weather(self, day_index):
-        return self.full_weather[day_index * 24:(day_index + 1) * 24]
+        if day_index < 160:
+            return self.full_weather[day_index * 24:(day_index + 1) * 24]
+        else:
+            mv_idx = day_index - 160
+            return self.full_weather[(day_index - mv_idx) * 24:(day_index + 1-mv_idx) * 24]
 
-    def calculate_reward(self, dayAction, dayState, dayReward):
+    def calculate_reward(self, dayAction, dayState, dayReward, dayCrop):
         economic = Economic(dayAction=dayAction, dayState=dayState,
-                            dayReward=dayReward).cal_economic
+                            dayReward=dayReward, dayCrop=dayCrop).cal_economic
         reward = economic['balance']
 
-        return reward
+        return reward, economic
 
     def update_observation(self, day_inside_weather):
-        # 更新状态值
+
         day_inside_weather = day_inside_weather.T.reshape(1, -1)
         self.observation = np.hstack(
             (day_inside_weather[0], self.crop_state, self.fw))
-        # 是否进行截断
+
         # self.observation = np.clip(self.observation,self.observation_space.low,self.observation_space.high)
 
     def step(self, action):
         assert len(action) == 96, 'wrong input control dimension'
         # assert len(action) == 24, 'wrong input control dimension'
 
-        # 更新动作值
         self.action = action
         # print(self.action)
 
@@ -238,7 +222,7 @@ class PredictModel(gym.Env):
 
         day_outside_weather = self.get_outside_weather(self.day_index)
 
-        day_inside_weather = np.zeros((24, 3))  # 保存一天内的内部天气状况
+        day_inside_weather = np.zeros((24, 3))
 
         for i in range(24):
             # each hour
@@ -284,7 +268,6 @@ class PredictModel(gym.Env):
         input3_normal = torch.tensor(input3_normal, dtype=torch.float)
         output3_normal = self.net3(input3_normal).detach().numpy()
         output3 = self.scaler3_y.inverse_transform(output3_normal)[0]
-        # print(output3)
 
         cur_fw = self.fw
 
@@ -292,30 +275,29 @@ class PredictModel(gym.Env):
         output3 = np.maximum(output3, self.fw)
         self.fw = output3
 
-        self.max_plantlaod = np.maximum(
-            self.max_plantlaod, self.observation[-3])
+        day_fw = (self.fw - cur_fw) + self.store_fw
+        harvest = 0.6
+        if day_fw < harvest:
+            self.store_fw += self.fw - cur_fw
+            day_fw = np.zeros(1)
 
-        day_fw = self.fw - cur_fw
+        else:
 
-        reward = self.calculate_reward(
-            dayAction=action, dayState=day_inside_weather, dayReward=day_fw)
+            self.store_fw = np.zeros(1)
 
+        dayCrop = self.periodCrop[self.day_index:self.day_index+1]
+        reward, economic = self.calculate_reward(
+            dayAction=action, dayState=day_inside_weather, dayReward=day_fw, dayCrop=dayCrop)
         self.update_observation(day_inside_weather)
 
         self.day_index += 1
 
-        # 保存前3天的plantload
+        done = self.day_index >= self._max_episode_steps
 
-        # 判断是否结束
-        # done = self.day_index >= 160 or (self.max_plantlaod > 200 and self.observation[-3] <= 120)
-        done = self.day_index >= 160
-        # if done:
-        #     self.reset()
+        return self.observation, reward, done, economic
 
-        return self.observation, reward, done, {}
+    def reset(self, periodCrop=np.full(166, 3.9)):
 
-    def reset(self):
-        # 初始化动作值
         # temp_list = [28 for _ in range(24)]
         # co2_list = [800 for _ in range(24)]
         # illu_list = [1 for _ in range(24)]
@@ -329,26 +311,28 @@ class PredictModel(gym.Env):
         irri_list = [0 for _ in range(6)]
         self.action = np.hstack((temp_list, co2_list, illu_list, irri_list))
 
-        # 初始化状态值
-        # 初始化外部天气
         self.outside_weather = self.get_outside_weather(0)[0]
-        # 初始化内部天气
+
         self.inside_weather = np.array([17.27, 61.83, 737.31])
         # self.day_inside_weather = np.concatenate(
         #     ([22 for _ in range(24)], [60 for _ in range(24)], [700 for _ in range(24)]))
         self.day_inside_weather = np.concatenate(
             (np.random.randint(20, 24, 24), np.random.randint(50, 80, 24), np.random.randint(600, 800, 24)))
-        # 初始化作物状态
+
         self.crop_state = np.array([0.2, 0, 0])
-        # 初始化FW
+
         self.fw = np.zeros(1)
 
         self.max_plantlaod = np.zeros(1)
 
+        self.periodCrop = periodCrop
+
+        self.store_fw = np.zeros(1)
+
         self.observation = np.hstack(
             (self.day_inside_weather, self.crop_state, self.fw))
 
-        # 初始化种植日期索引
         self.day_index = 0
 
+        # return self.action
         return self.observation

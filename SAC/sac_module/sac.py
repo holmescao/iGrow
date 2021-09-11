@@ -6,9 +6,9 @@ import math
 import os
 from SAC.sac_module.actor import DiagGaussianActor
 from SAC.sac_module.critic import DoubleQCritic
-# from tensorboardX import SummaryWriter
+from tensorboardX import SummaryWriter
 
-from SAC.sac_module import utils
+import SAC.sac_module.utils as utils
 
 import abc
 
@@ -195,11 +195,11 @@ class SACAgent(Agent):
                                      self.critic_tau)
         # Save model parameters
 
-    def save_model(self, env_name, suffix="", actor_path=None, critic_path=None):
-        if not os.path.exists('models/'):
-            os.makedirs('models/')
+    def save_model(self, env_name="", suffix="", actor_path=None, critic_path=None):
 
         if actor_path is None:
+            if not os.path.exists('models/'):
+                os.makedirs('models/')
             actor_path = "models/sac_actor_{}_{}".format(env_name, suffix)
         if critic_path is None:
             critic_path = "models/sac_critic_{}_{}".format(env_name, suffix)

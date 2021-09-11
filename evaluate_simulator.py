@@ -1,11 +1,3 @@
-'''
-Author: your name
-Date: 2021-06-12 23:12:32
-LastEditTime: 2021-07-04 22:49:31
-LastEditors: Please set LastEditors
-Description: In User Settings Edit
-FilePath: /SmartAgricultureSolution-iGrow/evaluate_simulator.py
-'''
 import pickle
 import pandas as pd
 import numpy as np
@@ -17,7 +9,7 @@ import gym
 from sklearn.metrics import r2_score
 
 from TenSim.utils.data_reader import TomatoDataset
-from TenSim.simulator_gpu import PredictModel
+from TenSim.simulator import PredictModel
 from utils.common import mkdir
 
 warnings.filterwarnings("ignore")

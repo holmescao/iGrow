@@ -1,3 +1,4 @@
+import numpy as np
 import datetime
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
@@ -12,20 +13,31 @@ plt_fig_params = {
     # 'figure.figsize': [10, 6],
     'figure.figsize': [6, 6],
     # 'figure.figsize': [15, 8],
-    "font.size": 18,     # 全局字号
-    'font.family': 'STIXGeneral',  # 全局字体
-    "figure.subplot.wspace": 0.2,  # 图-子图-宽度百分比
-    "figure.subplot.hspace": 0.4,  # 图-子图-高度百分比
-    "axes.spines.right": False,  # 坐标系-右侧线
-    "axes.spines.top": False,   # 坐标系-上侧线
-    "axes.titlesize": 22,   # 坐标系-标题-字号
-    "axes.labelsize": 18,  # 坐标系-标签-字号
-    "legend.fontsize": 18,  # 图例-字号
-    'savefig.pad_inches': 0,  # 去除空白
-    "xtick.labelsize": 16,  # 刻度-标签-字号
-    "ytick.labelsize": 16,  # 刻度-标签-字号
-    "xtick.direction": 'in',   # 刻度-方向
-    "ytick.direction": 'in'  # 刻度-方向
+    "font.size": 18,
+    'font.family': 'STIXGeneral',
+    "figure.subplot.wspace": 0.2,
+
+    "figure.subplot.hspace": 0.4,
+
+    "axes.spines.right": False,
+
+    "axes.spines.top": False,
+
+    "axes.titlesize": 22,
+
+    "axes.labelsize": 18,
+
+    "legend.fontsize": 18,
+
+    'savefig.pad_inches': 0,
+    "xtick.labelsize": 16,
+
+    "ytick.labelsize": 16,
+
+    "xtick.direction": 'in',
+
+    "ytick.direction": 'in'
+
 }
 
 plt_fig_props = {"xlabel": "xlabel",
@@ -47,19 +59,16 @@ def beauty_plot():
     layout = (3, 3)
     fig, axes = plt.sublpots(*layout)
 
-    # 更新参数
     mpl.rcParams.update(params)
     props = {"xlabel": "days",
              "ylabel": "euro/m2"}
 
-    # 基础类对象
     for i, ax in enumerate(axes.flat):
         key = 'AICU'
         val = 1
-        ax.plot(val, **style_dict[key])  # 绘制曲线
-        ax.set(**props)  # 参数设置
+        ax.plot(val, **style_dict[key])
+        ax.set(**props)
 
-        # 美化
         ax.grid(linestyle="--", alpha=0.2)
         ticks, labels = set_day_xtick(list(val), startDate, endDate)
         ax.xticks(ticks=ticks, labels=labels, rotation=30)
@@ -73,8 +82,26 @@ def beauty_plot():
     plt.close()
 
 
+def set_ytick(num, max_val, min_val):
+    max_val = int(max_val)
+    min_val = int(min_val)
+    interval = (max_val - min_val) // (num-1)
+
+    r, q = abs(interval) % 5, abs(interval)//5
+    interval = (q+1)*5 if r > 1 else interval
+
+    r, q = abs(min_val) % 5, abs(min_val)//5
+    min_val = int(np.sign(min_val)) * (q+1)*5 if r > 0 else min_val
+
+    ticks = list(range(min_val, max_val, interval))
+    if len(ticks) < num:
+        ticks.append(ticks[-1]+interval)
+
+    return ticks
+
+
 def set_day_xtick(num, var_list, startDate, endDate):
-    # 设置坐标轴
+
     interval = len(var_list) // (num-1) + 1
     ticks = range(0, len(var_list), interval)
     startDate_dt = datetime.datetime.strptime(startDate, "%Y-%m-%d")
@@ -94,7 +121,7 @@ def set_day_xtick(num, var_list, startDate, endDate):
 
 
 def set_hour_xtick(var_list, startDate, endDate):
-    # 设置坐标轴
+
     interval = len(var_list) // 6 + 1
     ticks = range(0, len(var_list), interval)
     startDate_dt = datetime.datetime.strptime(startDate, "%Y-%m-%d")

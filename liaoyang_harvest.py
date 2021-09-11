@@ -84,35 +84,39 @@ def compare_harvest_plot(expr_harvest, ctrl_harvest, df,
     for c in range(layout[1]):
         plt.subplot2grid(layout, (0, c), rowspan=1, colspan=1)
 
-    # 更新参数
-    props = {0: {"xlabel": "date",
-                 "ylabel": "kg / m2",
+    props = {0: {"xlabel": "Date",
+                 "ylabel": "Kg/m$^2$",
                  },
-             1: {"xlabel": "date",
-                 "ylabel": "euro / m2",
+             1: {"xlabel": "Date",
+                 "ylabel": "Euro/m$^2$",
                  },
-             2: {"ylabel": "euro",
+             2: {"ylabel": "Euro/Kg",
                  },
              }
     plt_fig_style = {
         'Human expert': dict(linestyle='--', lw=2, color=cm.viridis(0.7), label='the control group'),
         'EGA': dict(linestyle='-', lw=2, color=cm.viridis(0.3), label='the experimental group'), }
 
-    method = list(plt_fig_style.keys())
-    title = ['(a) Production', '(b) Gains', '(c) Price']
+    title = ['(a) Crop yield', '(b) Gains', '(c) Fruit Prices']
     key = ['production', 'gains', 'price']
 
     yticks_list = [list(range(0, 20, 5)) + [20],
                    list(range(0, 10, 3))]
-    # draw基础类对象
+
     for idx, ax in enumerate(fig.axes):
         if idx == 2:
-            columns = df.columns
             sns.boxplot(data=df, notch=0, linewidth=1.5,
-                        order=list(columns), dodge=True, width=0.6,
-                        palette=sns.color_palette("viridis_r", 2))
-            # 美化
-            ax.set_xticklabels(labels=['Growing expert', 'iGrow'])
+                        order=list(df.columns), dodge=False, width=0.6,
+                        palette=sns.color_palette("viridis_r", 2),
+                        saturation=0.7,
+                        showmeans=True,
+                        meanline=True,
+                        meanprops={'linestyle': '-',
+                                   'color': '#393939',
+                                   'linewidth': 3},
+                        )
+
+            ax.set_xticklabels(labels=['Planting expert', 'iGrow'])
             ax.tick_params(axis='x', labelsize=22)
         else:
             experiment_avg = np.mean(expr_harvest[key[idx]], axis=1)
@@ -120,26 +124,35 @@ def compare_harvest_plot(expr_harvest, ctrl_harvest, df,
             control_avg = np.mean(ctrl_harvest[key[idx]], axis=1)
             control_std = np.std(ctrl_harvest[key[idx]], axis=1)
 
-            iter = np.arange(len(experiment_avg))
+            expr_max_id = np.argmax(experiment_avg)
+            experiment_avg = experiment_avg[:expr_max_id+1]
+            experiment_std = experiment_std[:expr_max_id+1]
 
-            ax.plot(iter, experiment_avg, **plt_fig_style['EGA'])
+            ctrl_max_id = np.argmax(control_avg)
+            control_avg = control_avg[:ctrl_max_id+1]
+            control_std = control_std[:ctrl_max_id+1]
+
+            expr_iter = np.arange(len(experiment_avg))
+            ctrl_iter = np.arange(len(control_avg))
+
+            ax.plot(expr_iter, experiment_avg, **plt_fig_style['EGA'])
             r1 = list(map(lambda x: x[0] - x[1],
                           zip(experiment_avg, experiment_std)))
             r2 = list(map(lambda x: x[0] + x[1],
                           zip(experiment_avg, experiment_std)))
-            ax.fill_between(iter, r1, r2, alpha=0.3, **plt_fig_style['EGA'])
+            ax.fill_between(expr_iter, r1, r2, alpha=0.3,
+                            **plt_fig_style['EGA'])
 
-            ax.plot(iter, control_avg, **plt_fig_style['Human expert'])
+            ax.plot(ctrl_iter, control_avg, **plt_fig_style['Human expert'])
             r1 = list(map(lambda x: x[0] - x[1],
                           zip(control_avg, control_std)))
             r2 = list(map(lambda x: x[0] + x[1],
                           zip(control_avg, control_std)))
-            ax.fill_between(iter, r1, r2, alpha=0.3, **
+            ax.fill_between(ctrl_iter, r1, r2, alpha=0.3, **
                             plt_fig_style['Human expert'])
 
-            # 美化
             xticks, xlabels = set_day_xtick(num=4,
-                                            var_list=list(experiment_avg[:]),
+                                            var_list=list(control_avg[:]),
                                             startDate=startDate,
                                             endDate=endDate)
 
@@ -150,11 +163,10 @@ def compare_harvest_plot(expr_harvest, ctrl_harvest, df,
             ax.tick_params(axis='x', labelsize=20)
             ax.grid(linestyle="--", alpha=0.4)
 
-        ax.set_title(title[idx], y=-0.34, fontsize=25)
+        ax.set_title(title[idx], y=-0.38, fontsize=28)
         ax.tick_params(axis='y', labelsize=20)
 
-        ax.set(**props[idx])  # 参数设置
-
+        ax.set(**props[idx])
         min_xlim, max_xlim = ax.get_xlim()
         min_ylim, max_ylim = ax.get_ylim()
         xlim_length = abs(max_xlim - min_xlim)
@@ -170,18 +182,17 @@ def compare_harvest_plot(expr_harvest, ctrl_harvest, df,
     # legend
     ax = fig.axes[1]
     handles, labels = ax.get_legend_handles_labels()
-    plt.legend(handles[:2], labels[:2], bbox_to_anchor=(0.7, -0.3), loc='upper right',
-               ncol=2, framealpha=0, fancybox=False, fontsize=30)
-    plt.subplots_adjust(bottom=0.4)
+    plt.legend(handles[:2], labels[:2], bbox_to_anchor=(1.1, -0.33), loc='upper right',
+               ncol=2, framealpha=0, fancybox=False, fontsize=35)
+    plt.subplots_adjust(bottom=0.43)
 
-    # 保存
     mkdir(save_fig_dir)
     plt.savefig(save_fig_dir+'liaoyang2_harvest.png', bbox_inches='tight')
     plt.close()
 
 
 def harvest_analysis(args, harvest_dir):
-    # 结果初始化
+
     startDate = datetime.datetime.strptime(args.startDate, "%Y-%m-%d")
     endDate = datetime.datetime.strptime(args.endDate, "%Y-%m-%d")
     days = (endDate-startDate).days + 1
@@ -189,7 +200,7 @@ def harvest_analysis(args, harvest_dir):
     ctrl_prod = np.zeros((days, len(args.control_group)))
     expr_gains = np.zeros((days, len(args.experiment_gh)))
     ctrl_gains = np.zeros((days, len(args.control_group)))
-    # 读取收成数据文件
+
     m2_to_Mu = 667
     production = pd.read_csv(harvest_dir + 'production.csv')
     production = production.values[:, 1:] / m2_to_Mu

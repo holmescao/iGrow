@@ -2,11 +2,11 @@ import datetime
 
 import numpy as np
 import torch
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
-from torch.autograd import Variable
+from sklearn.preprocessing import MinMaxScaler
+# from torch.autograd import Variable
 from torch.utils.data import Dataset, DataLoader, Subset
-from utils.model import Net
-from utils.data_reader import TomatoDataset
+# from utils.model import Net
+# from utils.data_reader import TomatoDataset
 import pickle
 import os
 
@@ -19,7 +19,8 @@ torch.set_num_threads(1)
 
 class DealDataset(Dataset):
     """
-        加载数据、标准化数据
+
+
     """
 
     def __init__(self, train_x, train_y, x_scaler_path, y_scaler_path):
@@ -28,7 +29,8 @@ class DealDataset(Dataset):
         self.len = len(self.x_data)
 
     def get_data(self, train_x, train_y, x_scaler_path, y_scaler_path):
-        ''' # 训练wur team
+        '''  
+
         x_scaler = pickle.load(open(x_scaler_path, 'rb'))
         y_scaler = pickle.load(open(y_scaler_path, 'rb'))
 
@@ -78,27 +80,19 @@ def idMapTarjectory(indices, period):
     return traj_ids.astype(np.int32)
 
 
-def data_prepare(train_x,
-                 train_y,
-                 x_scaler_path,
-                 y_scaler_path,
-                 batch_size,
-                 train_val_size,
-                 val_ratio,
-                 test_size,
-                 period,
-                 train_shuffle,
-                 test_shuffle
-                 ):
-    """
+def data_prepare_old(train_x,
+                     train_y,
+                     x_scaler_path,
+                     y_scaler_path,
+                     batch_size,
+                     train_val_size,
+                     val_ratio,
+                     test_size,
+                     period,
+                     train_shuffle,
+                     test_shuffle
+                     ):
 
-    :param train_data_dir: 训练数据地址
-    :param train_data_length: 训练数据的大小；None时为使用地址里的所有数据
-    :param batch_size: -
-    :param train_shuffle: -
-    :param test_shuffle: -
-    :return:
-    """
     trainval_batch_size = batch_size * period
     test_batch_size = 1 * period
 
@@ -137,6 +131,39 @@ def data_prepare(train_x,
     return dealDataset, train_loader, val_loader, test_loader
 
 
+def data_prepare(train_x,
+                 train_y,
+                 x_scaler_path,
+                 y_scaler_path,
+                 batch_size=64,
+                 train_shuffle=True,
+                 test_shuffle=False
+                 ):
+ 
+    dealDataset = DealDataset(train_x, train_y, x_scaler_path, y_scaler_path)
+    print(len(dealDataset))
+    ratio = [7, 2, 1]
+    length = [len(dealDataset) * ratio[0] // 10,
+              len(dealDataset) * ratio[1] // 10]
+    length.append(len(dealDataset) - length[0] - length[1])
+    print('train: validation : test length', length)
+    train_db, val_db, test_db = torch.utils.data.random_split(
+        dealDataset, [length[0], length[1], length[2]])
+    x_scaler, y_scaler = dealDataset.x_scaler, dealDataset.y_scaler
+    #
+    train_loader = DataLoader(dataset=train_db,
+                              batch_size=batch_size,
+                              shuffle=train_shuffle)
+    val_loader = DataLoader(dataset=val_db,
+                            batch_size=batch_size,
+                            shuffle=train_shuffle)
+    test_loader = DataLoader(dataset=test_db,
+                             batch_size=1,
+                             shuffle=test_shuffle)
+
+    return dealDataset, train_loader, val_loader, test_loader
+
+
 def train_nn(net,
              train_loader,
              val_loader,
@@ -144,17 +171,7 @@ def train_nn(net,
              Epoch=13,
              save_model='../model/simulator.pkl',
              train_log='./trainlog.log'):
-    """
 
-    :param net: 神经网络模型实例
-    :param train_loader: 训练数据loader
-    :param val_loader: 验证数据loader
-    :param lr: 学习率
-    :param Epoch: 训练周期
-    :param save_model: 模型保存地址
-    :param train_log: 训练日志
-    :return:
-    """
     optimizer = torch.optim.Adam(net.parameters(), lr=lr)
     loss_func = torch.nn.MSELoss(reduce=True, reduction='sum')  # sum loss
     # mult_step_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer,
@@ -171,7 +188,7 @@ def train_nn(net,
     net.to(device)
     for i, epoch in enumerate(range(Epoch)):
         total_train_loss = []
-        # total_train_loss = torch.zeros(len(train_loader))  # 6个
+
         net.train()
         for j, data in enumerate(train_loader):
             x, y = data
@@ -208,7 +225,7 @@ def train_nn(net,
 
         if (valid_loss[-1] <= min_valid_loss):
             print('epoch:{}, save!'.format(epoch))
-            # 保存字典对象，里面'model'的value是模型
+
             torch.save(net.state_dict(), save_model)
             min_valid_loss = valid_loss[-1]
 
@@ -219,9 +236,9 @@ def train_nn(net,
                                                                         min_valid_loss,
                                                                         lr)
         mult_step_scheduler.step()
-        # 服务器一般用的世界时，需要加8个小时，可以视情况把加8小时去掉
+
         print(str(datetime.datetime.now()) + ': ')
-        print(log_string)  # 打印日志
+        print(log_string)
         log(train_log, log_string)
 
         ###############################################################################
@@ -230,7 +247,8 @@ def train_nn(net,
 
         # if (train_loss[-1] <= min_train_loss):
         #     #print('epoch:{}, save!'.format(epoch))
-        #     # 保存字典对象，里面'model'的value是模型
+        #
+
         #     torch.save(net.state_dict(), save_model)
         #     print("save_model")
         #     min_train_loss = train_loss[-1]
@@ -241,7 +259,7 @@ def train_nn(net,
         #                                                                 min_train_loss,
         #                                                                 lr)
         # mult_step_scheduler.step()
-        # 服务器一般用的世界时，需要加8个小时，可以视情况把加8小时去掉
+
         # print(str(datetime.datetime.now()) + ': ')
-        # print(log_string)  # 打印日志
+        # print(log_string)
         # log(train_log, log_string)

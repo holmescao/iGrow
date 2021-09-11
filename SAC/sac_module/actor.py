@@ -1,11 +1,12 @@
 '''
 Author: your name
-Date: 2021-06-25 11:10:14
-LastEditTime: 2021-06-25 21:21:35
-LastEditors: Please set LastEditors
+Date: 2021-09-11 22:47:33
+LastEditTime: 2021-09-11 23:07:12
+LastEditors: your name
 Description: In User Settings Edit
-FilePath: /NMI/SAC/sac_module/actor.py
+FilePath: /SmartAgricultureSolution-iGrow/SAC/sac_module/actor.py
 '''
+
 import numpy as np
 import torch
 import math
@@ -13,7 +14,7 @@ from torch import nn
 import torch.nn.functional as F
 from torch import distributions as pyd
 
-from SAC.sac_module import utils
+import SAC.sac_module.utils as utils
 
 
 class TanhTransform(pyd.transforms.Transform):

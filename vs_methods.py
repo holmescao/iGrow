@@ -1,11 +1,3 @@
-'''
-Author: your name
-Date: 2021-06-25 15:39:10
-LastEditTime: 2021-06-27 14:57:07
-LastEditors: Please set LastEditors
-Description: In User Settings Edit
-FilePath: /NMI/vs_methods.py
-'''
 import gym
 import argparse
 import scipy.io as scio
@@ -17,10 +9,10 @@ import matplotlib as mpl
 import warnings
 
 from TenSim.utils.data_reader import TomatoDataset
-from TenSim.simulator_gpu import PredictModel
-from utils.common import mkdir, save_curve
-from utils.plt_params import plt_fig_params, set_day_xtick
-from GA.config import setting
+from TenSim.simulator import PredictModel
+from utils.common import mkdir, save_curve, load_curve
+from utils.plt_params import plt_fig_params, set_day_xtick, set_ytick
+from GA.ga_module.config import setting_test
 from SAC.sac_module.sac import SACAgent
 from SAC.sac_module import utils
 
@@ -84,71 +76,208 @@ def get_stems(files_path):
     return stems
 
 
+def SaveCurve(EGA_economic, SAC_economic, Automatoes_economic, figure4d_EGA_lmp_control, figure4d_Automatoes_lmp_control, save_curve_dir):
+
+    plantcost = 4.29
+    price = 3.185
+    # figure 4(a)
+    figure4a_production_EGA = np.cumsum(EGA_economic['gains']) / price
+    figure4a_production_EGA_dict = {"xlabel": 'Date', "ylabel": "Kg/m$^2$",
+                                    "x": range(len(figure4a_production_EGA)),
+                                    "y": figure4a_production_EGA}
+    figure4a_production_SAC = np.cumsum(SAC_economic['gains']) / price
+    figure4a_production_SAC_dict = {"xlabel": 'Date', "ylabel": "Kg/m$^2$",
+                                    "x": range(len(figure4a_production_SAC)),
+                                    "y": figure4a_production_SAC}
+    figure4a_production_Automatoes = np.cumsum(
+        Automatoes_economic['gains']) / price
+    figure4a_production_Automatoes_dict = {"xlabel": 'Date', "ylabel": "Kg/m$^2$",
+                                           "x": range(len(figure4a_production_Automatoes)),
+                                           "y": figure4a_production_Automatoes}
+    # figure 4(b)
+    figure4b_cost_EGA = np.cumsum(EGA_economic['variableCosts'])
+    figure4b_cost_EGA_dict = {"xlabel": 'Date', "ylabel": "Euro/m$^2$",
+                              "x": range(len(figure4b_cost_EGA)),
+                              "y": figure4b_cost_EGA}
+    figure4b_cost_SAC = np.cumsum(SAC_economic['variableCosts'])
+    figure4b_cost_SAC_dict = {"xlabel": 'Date', "ylabel": "Euro/m$^2$",
+                              "x": range(len(figure4b_cost_SAC)),
+                              "y": figure4b_cost_SAC}
+    figure4b_cost_Automatoes = np.cumsum(Automatoes_economic['variableCosts'])
+    figure4b_cost_Automatoes_dict = {"xlabel": 'Date', "ylabel": "Euro/m$^2$",
+                                     "x": range(len(figure4b_cost_Automatoes)),
+                                     "y": figure4b_cost_Automatoes}
+    # figure 4(c)
+    figure4c_balance_EGA = np.cumsum(EGA_economic['balance'])-plantcost
+    figure4c_balance_EGA_dict = {"xlabel": 'Date', "ylabel": "Euro/m$^2$",
+                                 "x": range(len(figure4c_balance_EGA)),
+                                 "y": figure4c_balance_EGA}
+    figure4c_balance_SAC = np.cumsum(SAC_economic['balance'])-plantcost
+    figure4c_balance_SAC_dict = {"xlabel": 'Date', "ylabel": "Euro/m$^2$",
+                                 "x": range(len(figure4c_balance_SAC)),
+                                 "y": figure4c_balance_SAC}
+    figure4c_balance_Automatoes = np.cumsum(
+        Automatoes_economic['balance'])-plantcost
+    figure4c_balance_Automatoes_dict = {"xlabel": 'Date', "ylabel": "Euro/m$^2$",
+                                        "x": range(len(figure4c_balance_Automatoes)),
+                                        "y": figure4c_balance_Automatoes}
+    # figure 4(d)
+    figure4d_EGA_lmp_control_dict = {"xlabel": 'Hour', "ylabel": "On=1,Off=0",
+                                     "x": np.arange(len(figure4d_EGA_lmp_control)),
+                                     "y": figure4d_EGA_lmp_control}
+    figure4d_Automatoes_lmp_control_dict = {"xlabel": 'Hour', "ylabel": "On=1,Off=0",
+                                            "x": np.arange(len(figure4d_Automatoes_lmp_control)),
+                                            "y": figure4d_Automatoes_lmp_control}
+
+    # figure 4(a)
+    save_curve(figure4a_production_EGA_dict, save_curve_dir +
+               'figure4a_production_EGA_dict.pkl')
+    save_curve(figure4a_production_SAC_dict, save_curve_dir +
+               'figure4a_production_SAC_dict.pkl')
+    save_curve(figure4a_production_Automatoes_dict, save_curve_dir +
+               'figure4a_production_Automatoes_dict.pkl')
+    # figure 4(b)
+    save_curve(figure4b_cost_EGA_dict, save_curve_dir +
+               'figure4b_cost_EGA_dict.pkl')
+    save_curve(figure4b_cost_SAC_dict, save_curve_dir +
+               'figure4b_cost_SAC_dict.pkl')
+    save_curve(figure4b_cost_Automatoes_dict, save_curve_dir +
+               'figure4b_cost_Automatoes_dict.pkl')
+    # figure 4(c)
+    save_curve(figure4c_balance_EGA_dict, save_curve_dir +
+               'figure4c_balance_EGA_dict.pkl')
+    save_curve(figure4c_balance_SAC_dict, save_curve_dir +
+               'figure4c_balance_SAC_dict.pkl')
+    save_curve(figure4c_balance_Automatoes_dict, save_curve_dir +
+               'figure4c_balance_Automatoes_dict.pkl')
+    # figure 4(d)
+    save_curve(figure4d_EGA_lmp_control_dict, save_curve_dir +
+               'figure4d_EGA_lmp_control_dict.pkl')
+    save_curve(figure4d_Automatoes_lmp_control_dict, save_curve_dir +
+               'figure4d_Automatoes_lmp_control_dict.pkl')
+
+    # show
+    sim_res = {
+        "figure4a": {
+            "values": {
+                "EGA": figure4a_production_EGA,
+                "SAC": figure4a_production_SAC,
+                "Automatoes": figure4a_production_Automatoes},
+            "props": {"xlabel": 'Date', "ylabel": "Kg/m$^2$"}},
+        "figure4b": {
+            "values": {
+                "EGA": figure4b_cost_EGA,
+                "SAC": figure4b_cost_SAC,
+                "Automatoes": figure4b_cost_Automatoes},
+            "props": {"xlabel": 'Date', "ylabel": "Euro/m$^2$"}},
+        "figure4c": {
+            "values": {
+                "EGA": figure4c_balance_EGA,
+                "SAC": figure4c_balance_SAC,
+                "Automatoes": figure4c_balance_Automatoes},
+            "props": {"xlabel": 'Date', "ylabel": "Euro/m$^2$"}},
+        "figure4d": {
+            "values": {
+                "EGA": figure4d_EGA_lmp_control,
+                "Automatoes": figure4d_Automatoes_lmp_control},
+            "props": {"xlabel": 'Hour', "ylabel": "on=1,off=0", }
+        },
+    }
+
+    return sim_res
+
+
+def LoadCurve(save_curve_dir):
+    # figure 4(a)
+    figure4a_production_EGA_dict = load_curve(save_curve_dir +
+                                              'figure4a_production_EGA_dict.pkl')
+    figure4a_production_SAC_dict = load_curve(save_curve_dir +
+                                              'figure4a_production_SAC_dict.pkl')
+    figure4a_production_Automatoes_dict = load_curve(save_curve_dir +
+                                                     'figure4a_production_Automatoes_dict.pkl')
+    # figure 4(b)
+    figure4b_cost_EGA_dict = load_curve(save_curve_dir +
+                                        'figure4b_cost_EGA_dict.pkl')
+    figure4b_cost_SAC_dict = load_curve(save_curve_dir +
+                                        'figure4b_cost_SAC_dict.pkl')
+    figure4b_cost_Automatoes_dict = load_curve(save_curve_dir +
+                                               'figure4b_cost_Automatoes_dict.pkl')
+    # figure 4(c)
+    figure4c_balance_EGA_dict = load_curve(save_curve_dir +
+                                           'figure4c_balance_EGA_dict.pkl')
+    figure4c_balance_SAC_dict = load_curve(save_curve_dir +
+                                           'figure4c_balance_SAC_dict.pkl')
+    figure4c_balance_Automatoes_dict = load_curve(save_curve_dir +
+                                                  'figure4c_balance_Automatoes_dict.pkl')
+    # figure 4(d)
+    figure4d_EGA_lmp_control_dict = load_curve(save_curve_dir +
+                                               'figure4d_EGA_lmp_control_dict.pkl')
+    figure4d_Automatoes_lmp_control_dict = load_curve(save_curve_dir +
+                                                      'figure4d_Automatoes_lmp_control_dict.pkl')
+
+    # show
+    sim_res = {
+        "figure4a": {
+            "values": {
+                "EGA": figure4a_production_EGA_dict['y'],
+                "SAC": figure4a_production_SAC_dict['y'],
+                "Automatoes": figure4a_production_Automatoes_dict['y'], },
+            "props": {"xlabel": 'Date', "ylabel": "Kg/m$^2$"}},
+        "figure4b": {
+            "values": {
+                "EGA": figure4b_cost_EGA_dict['y'],
+                "SAC": figure4b_cost_SAC_dict['y'],
+                "Automatoes": figure4b_cost_Automatoes_dict['y'], },
+            "props": {"xlabel": 'Date', "ylabel": "Euro/m$^2$"}},
+        "figure4c": {
+            "values": {
+                "EGA": figure4c_balance_EGA_dict['y'],
+                "SAC": figure4c_balance_SAC_dict['y'],
+                "Automatoes": figure4c_balance_Automatoes_dict['y'], },
+            "props": {"xlabel": 'Date', "ylabel": "Euro/m$^2$"}},
+        "figure4d": {
+            "values": {
+                "EGA": figure4d_EGA_lmp_control_dict['y'],
+                "Automatoes": figure4d_Automatoes_lmp_control_dict['y'], },
+            "props": {"xlabel": 'Hour', "ylabel": "On=1,Off=0", }
+        },
+    }
+
+    return sim_res
+
+
 def Figure4(args):
     print("=============Figure4===============")
     save_dir = args.base_tmp_folder+'/figure4/'
-    mkdir(save_dir)
-
-    stems = get_stems(args.wur_champion_files)
-
-    # curve
-    figure4a_EGA_balance = get_EGA(args, stems)
-    figure4a_SAC_balance = get_SAC(args, stems)
-    figure4a_Automatoes_balance, _ = get_Automatoes(args, stems)
-    figure4b_EGA_control = get_control(args, method='EGA', var='temp')
-    figure4c_EGA_control = get_control(args, method='EGA', var='lmp')
-    figure4b_Automatoes_control = get_control(
-        args, method='Automatoes', var='temp')
-    figure4c_Automatoes_control = get_control(
-        args, method='Automatoes', var='lmp')
-
-    plantcost = 4.29
-    # save
-    figure4a_EGA = {"xlabel": 'date', "ylabel": "euro/m2",
-                    "x": range(len(figure4a_EGA_balance)),
-                    "y": np.cumsum(figure4a_EGA_balance)-plantcost}
-    figure4a_SAC = {"xlabel": 'date', "ylabel": "euro/m2",
-                    "x": range(len(figure4a_SAC_balance)),
-                    "y": np.cumsum(figure4a_SAC_balance)-plantcost}
-    figure4a_Automatoes = {"xlabel": 'date', "ylabel": "euro/m2",
-                           "x": range(len(figure4a_Automatoes_balance)),
-                           "y": np.cumsum(figure4a_Automatoes_balance)-plantcost}
-    figure4b_EGA = {"xlabel": 'hour', "ylabel": "oC",
-                    "x": np.arange(len(figure4b_EGA_control)),
-                    "y": figure4b_EGA_control}
-    figure4c_EGA = {"xlabel": 'hour', "ylabel": "on=1,off=0",
-                    "x": np.arange(len(figure4c_EGA_control)),
-                    "y": figure4c_EGA_control}
-    figure4b_Automatoes = {"xlabel": 'hour', "ylabel": "oC",
-                           "x": np.arange(len(figure4b_Automatoes_control)),
-                           "y": figure4b_Automatoes_control}
-    figure4c_Automatoes = {"xlabel": 'hour', "ylabel": "on=1,off=0",
-                           "x": np.arange(len(figure4c_Automatoes_control)),
-                           "y": figure4c_Automatoes_control}
-
+    if not os.path.exists(save_dir):
+        mkdir(save_dir)
     save_curve_dir = save_dir + '/curve/'
-    mkdir(save_curve_dir)
-    save_curve(figure4a_EGA, save_curve_dir+'figure4a_EGA.pkl')
-    save_curve(figure4a_SAC, save_curve_dir+'figure4a_SAC.pkl')
-    save_curve(figure4a_Automatoes, save_curve_dir+'figure4a_Automatoes.pkl')
 
-    save_curve(figure4b_EGA, save_curve_dir+'figure4b_EGA.pkl')
-    save_curve(figure4c_EGA, save_curve_dir+'figure4c_EGA.pkl')
-    save_curve(figure4b_Automatoes, save_curve_dir+'figure4b_Automatoes.pkl')
-    save_curve(figure4c_Automatoes, save_curve_dir+'figure4c_Automatoes.pkl')
+    if os.path.exists(save_curve_dir):
+        sim_res = LoadCurve(save_curve_dir)
+    else:
+        stems = get_stems(args.wur_champion_files)
 
-    # show
-    sim_res = {"EGA": list(figure4a_EGA['y']),
-               "SAC": list(figure4a_SAC['y']),
-               "Automatoes": list(figure4a_Automatoes['y'])}
+        # curve
+        EGA_economic = get_EGA(args, stems)
+        SAC_economic = get_SAC(args, stems)
+        Automatoes_economic = get_Automatoes(args, stems)
+        figure4d_EGA_lmp_control = get_control(args, method='EGA', var='lmp')
+        figure4d_Automatoes_lmp_control = get_control(
+            args, method='Automatoes', var='lmp')
 
-    control_res = {"EGA": [figure4b_EGA_control, figure4c_EGA_control],
-                   "team": [figure4b_Automatoes_control, figure4c_Automatoes_control]}
+        # save
+        mkdir(save_curve_dir)
+        sim_res = SaveCurve(EGA_economic,
+                            SAC_economic,
+                            Automatoes_economic,
+                            figure4d_EGA_lmp_control,
+                            figure4d_Automatoes_lmp_control,
+                            save_curve_dir)
 
     compare_plot(sim_res=sim_res,
-                 control_res=control_res,
-                 xticks_list=[list(range(0, 20000, 10000))+[20000],
-                              list(range(0, 1000, 350))+[1000]],
+                 startDate=args.startDate,
+                 endDate=args.endDate,
                  save_fig_dir=save_dir)
 
 
@@ -170,7 +299,6 @@ def get_control(args, method, var):
         X = full_train_x[-1, :, 6:10]
         policy = X[:24*160, :]
 
-    # 选择第80天开始的120小时的策略
     link_day = 5
     d = 80
     day_dim = 24
@@ -188,21 +316,21 @@ def get_control(args, method, var):
     if var == 'temp':
         setpoints = link[0]
     elif var == 'lmp':
-        setpoints = link[2]
+        setpoints = list(map(round, link[2]))
 
     return setpoints
 
 
 def get_EGA(args, stems):
-    balance = ga_sim(args, stems)
+    economic = ga_sim(args, stems)
 
-    return balance
+    return economic
 
 
 def get_SAC(args, stems):
-    balance, _ = sac_sim(args, stems)
+    _, economic = sac_sim(args, stems)
 
-    return balance
+    return economic
 
 
 def sac_sim(args, stems):
@@ -257,9 +385,9 @@ def ga_sim(args, stems):
             policy[d*24:(d+1)*24, varIdx] = dayX[varIdx*24:(varIdx+1)*24]
 
     ten_env = env(args.version, args.base_tmp_folder)
-    balance, _ = simOurModel(policy, ten_env, stems)
+    _, economic = simOurModel(policy, ten_env, stems)
 
-    return balance
+    return economic
 
 
 def simOurModel(period_action, ten_env, CropParams):
@@ -277,9 +405,9 @@ def simOurModel(period_action, ten_env, CropParams):
                 'heatCost': [],
                 'laborCost': []}
 
-    # 仿真整个周期，并获取最终reward
     while not done:
-        a = period_action[day*dims: (day+1)*dims, :]  # 获取1天的策略
+        a = period_action[day*dims: (day+1)*dims, :]
+
         a = a.reshape((-1), order='F')
         _, r, done, ec = ten_env.step(a)
         day += 1
@@ -293,147 +421,110 @@ def simOurModel(period_action, ten_env, CropParams):
 
 def ga_params(parser):
     parser.add_argument(
-        '--seed', default=setting['params_info']['seed'], help='random seed')
+        '--seed', default=setting_test['params_info']['seed'], help='random seed')
     parser.add_argument(
-        '--NIND', default=setting['params_info']['NIND'], help='population size')
+        '--NIND', default=setting_test['params_info']['NIND'], help='population size')
     parser.add_argument(
-        '--MAXGEN', default=setting['params_info']['MAXGEN'], help='maximum generation')
+        '--MAXGEN', default=setting_test['params_info']['MAXGEN'], help='maximum generation')
     parser.add_argument(
-        '--LINKDAY', default=setting['params_info']['LINKDAY'], help='copy days')
+        '--LINKDAY', default=setting_test['params_info']['LINKDAY'], help='copy days')
     parser.add_argument(
-        '--XOVR', default=setting['params_info']['XOVR'], help='crossover probability')
+        '--XOVR', default=setting_test['params_info']['XOVR'], help='crossover probability')
 
     return parser
 
 
 def sac_params(parser):
-    parser.add_argument('--sac_actor', default="sac_actor_7900")
-    parser.add_argument('--sac_critic', default="sac_critic_7900")
+    parser.add_argument('--sac_actor', default="sac_actor_7900_Exp")
+    parser.add_argument('--sac_critic', default="sac_critic_7900_Exp")
 
     return parser
 
 
-def compare_plot(sim_res, control_res, xticks_list, save_fig_dir):
+def compare_plot(sim_res, startDate, endDate, save_fig_dir):
     # fig, axes
     mpl.rcParams.update(plt_fig_params)
-
-    fig = plt.figure(figsize=(15, 8))
-    layout = (2, 7)
-    plt.subplot2grid(layout, (0, 0), rowspan=2, colspan=3)
+    fig = plt.figure(figsize=(13, 8))
+    layout = (2, 2)
     for r in range(layout[0]):
-        plt.subplot2grid(layout, (r, 3), rowspan=1, colspan=2)
+        for c in range(layout[1]):
+            plt.subplot2grid(layout, (r, c), rowspan=1, colspan=1)
 
-    # 更新参数
-    props1 = {0: {"xlabel": "date",
-                  "ylabel": "euro / m$^2$",
-                  }
-              }
-    props2 = {
-        0: {"xlabel": "hour",
-            "ylabel": "$^\circ$C",
-            },
-        1: {"xlabel": "hour",
-            "ylabel": "on=1, off=0",
-            },
-    }
-    # colors = ['#ec4646', cm.viridis(0.3), '#eaac7f']
-    colors = ['#ec4646', cm.viridis(0.3), cm.viridis(0.6)]
-    #              curve_name[1]: cm.viridis(0.6),
-    #              curve_name[2]: cm.cool(0.3),
-    #              curve_name[3]: cm.winter(0.3)}
+    colors = {"Automatoes": '#ec4646',
+              "EGA": cm.viridis(0.3),
+              "SAC": cm.viridis(0.6)}
+    lw = 2.5
+    plt_fig_style = {
+        'Automatoes': dict(linestyle='--', lw=lw, alpha=1, color=colors['Automatoes'], label='Automatoes'),
+        'EGA': dict(linestyle='-', lw=lw, alpha=1, color=colors["EGA"], label='EGA'),
+        'SAC': dict(linestyle='-', lw=lw, alpha=1, color=colors["SAC"], label='SAC'), }
 
-    alpha = 1
-    plt_fig_style1 = {
-        'Automatoes': dict(linestyle='--', lw=2.8, alpha=alpha, color=colors[0], label='Automatoes'),
-        'EGA': dict(linestyle='-', lw=2.8, alpha=alpha, color=colors[1], label='EGA'),
-        'SAC': dict(linestyle='-', lw=2.8, alpha=alpha, color=colors[2], label='SAC'), }
-    plt_fig_style2 = {
-        'Automatoes': dict(linestyle='--', lw=1.5, alpha=alpha, color=colors[0], label='Automatoes'),
-        'EGA': dict(linestyle='-', lw=1.5, alpha=alpha, color=colors[1], label='EGA'),
-        'SAC': dict(linestyle='-', lw=1.5, alpha=alpha, color=colors[2], label='SAC'), }
+    sub_titles = ['(a) Crop yield', '(b) Cost',
+                  '(c) NetProfit', '(d) Illumination action']
+    fig_ax = dict(zip(sim_res.keys(), range(len(sim_res.keys()))))
+    yticks_num = dict(zip(sim_res.keys(), [4]*3+[2]))
 
-    names = ['(a) NetProfit', '(b) Temperature', '(c) Illumination']
-    xticks = list(range(0, 120, 30)) + [120]
-    yticks_list = [list(range(12, 33, 6)),
-                   [0, 1], ]
-    # draw基础类对象
-    ga = sim_res['EGA']
-    sac = sim_res['SAC']
-    best_team = sim_res['Automatoes']
-    for idx, ax in enumerate(fig.axes):
-        if idx == 0:
-            ax.plot(list(ga), **plt_fig_style1['EGA'])
-            ax.plot(sac, **plt_fig_style1['SAC'])
-            ax.plot(best_team, **plt_fig_style1['Automatoes'])
+    for sub_fig, info in sim_res.items():
+        values = info['values']
+        props = info['props']
+        ax_id = fig_ax[sub_fig]
 
-            # 美化
-            ticks, labels = set_day_xtick(num=4,
-                                          var_list=list(ga[:]),
-                                          startDate='2019-12-16',
-                                          endDate='2020-05-29')
-            ax.set_xticks(ticks=ticks)
-            ax.set_xticklabels(labels=labels)
-            ax.set_yticks(ticks=list(range(-20, 25, 10)))
-            ax.set_title(names[idx], y=-0.24, fontsize=25)
+        ax = fig.axes[ax_id]
 
-            min_xlim, max_xlim = ax.get_xlim()
-            min_ylim, max_ylim = ax.get_ylim()
-            xlim_length = abs(max_xlim - min_xlim)
-            ylim_length = abs(max_ylim - min_ylim)
-            aspect = xlim_length / ylim_length
-            ax.set_aspect(aspect*0.9)
+        max_val, min_val = 0, 0
+        for method, val in values.items():
+            ax.plot(val, **plt_fig_style[method])
+            max_val = max(val) if max(val) > max_val else max_val
+            min_val = min(val) if min(val) < min_val else min_val
 
-            ax.set(**props1[idx])  # 参数设置a
-            ax.grid(linestyle="--", alpha=0.4)
-
-        else:
-            idx_ = idx-1
-            ax.plot(control_res['EGA'][idx_], **plt_fig_style2['EGA'])
-            ax.plot(control_res['team'][idx_], **plt_fig_style2['Automatoes'])
-            # 美化
+        if sub_fig == "figure4d":
+            xticks = list(range(0, 120, 30)) + [120]
             ax.set_xticks(ticks=xticks)
-            ax.set_yticks(ticks=yticks_list[idx_])
-            ax.set_title(names[idx], y=-0.47, fontsize=25)
-            ax.set(**props2[idx_])  # 参数设置
+        else:
+            xticks, xlabels = set_day_xtick(num=4,
+                                            var_list=val,
+                                            startDate=startDate,
+                                            endDate=endDate)
+            ax.set_xticks(ticks=xticks)
+            ax.set_xticklabels(labels=xlabels)
 
-            min_xlim, max_xlim = ax.get_xlim()
-            min_ylim, max_ylim = ax.get_ylim()
-            xlim_length = abs(max_xlim - min_xlim)
-            ylim_length = abs(max_ylim - min_ylim)
-            aspect = xlim_length / ylim_length
-            ax.set_aspect(aspect)
-            ax.tick_params(axis='x', labelsize=22)
-            ax.tick_params(axis='y', labelsize=22)
-            ax.xaxis.label.set_size(25)
-            ax.yaxis.label.set_size(25)
-            ax.set_aspect(aspect*0.8)
+        yticks = set_ytick(num=yticks_num[sub_fig],
+                           max_val=max_val,
+                           min_val=min_val)
+        ax.set_yticks(ticks=yticks)
 
-        # for tick in ax.get_xticklabels():
-        #     tick.set_rotation(15)
-        ax.tick_params(axis='x', labelsize=22)
-        ax.tick_params(axis='y', labelsize=22)
-        ax.xaxis.label.set_size(25)
-        ax.yaxis.label.set_size(25)
+        ax.set_title(sub_titles[ax_id], y=-0.4, fontsize=25)
 
-    plt.tight_layout()
+        min_xlim, max_xlim = ax.get_xlim()
+        min_ylim, max_ylim = ax.get_ylim()
+        xlim_length = abs(max_xlim - min_xlim)
+        ylim_length = abs(max_ylim - min_ylim)
+        aspect = xlim_length / ylim_length
+        ax.set_aspect(aspect*0.9)
+
+        ax.set(**props)
+        ax.grid(linestyle="--", alpha=0.4)
 
     # legend
-    ax = fig.axes[0]
-    handles, labels = ax.get_legend_handles_labels()
-    ax.legend(handles, labels, bbox_to_anchor=(0.1, -0.25), loc='upper left',
-              ncol=3, framealpha=0, fancybox=False, fontsize=25)
-    plt.subplots_adjust(bottom=0.3)
-    # 保存
+    # ax = fig.axes[1]
+    # handles, labels = ax.get_legend_handles_labels()
+    # ax.legend(handles, labels, bbox_to_anchor=(1, 1), loc='upper left',
+    #           ncol=3, framealpha=0, fancybox=False, fontsize=25)
+    # plt.subplots_adjust(bottom=0.6)
+    plt.tight_layout()
+
     mkdir(save_fig_dir)
     plt.savefig(os.path.join(
-        save_fig_dir, 'compare_methods.png'), bbox_inches='tight')
+        save_fig_dir, 'compare_methods.png'))
+    # plt.savefig(os.path.join(
+    #     save_fig_dir, 'compare_methods.png'), bbox_inches='tight')
     plt.close()
 
 
 def get_Automatoes(args, stems):
     balance, economic = get_sim_res(
         stems, args.wur_team_files, args.base_tmp_folder, args.version)
-    return balance, economic
+    return economic
 
 
 def get_sim_res(stems, trainDir, base_tmp_folder, version):
@@ -469,6 +560,10 @@ if __name__ == "__main__":
                         default="GA/ga_train/policy/", type=str)
     parser.add_argument("--sac_model_dir",
                         default="SAC/sac_model/", type=str)
+    parser.add_argument("--startDate", default="2019-12-16",
+                        help="start date of planting",)
+    parser.add_argument("--endDate", default="2020-05-29",
+                        help="end date of planting")
 
     parser = ga_params(parser)
     parser = sac_params(parser)

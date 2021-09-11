@@ -46,6 +46,7 @@ def CalculateCost(Table4_df, harvest_file_dir):
 
 
 def CalculateHarvest(Table4_df, harvest_file_dir):
+    m2_to_Mu = 667
     # Price
     harvest_price_dir = os.path.join(harvest_file_dir, 'price.csv')
     df = pd.read_csv(harvest_price_dir)
@@ -63,13 +64,12 @@ def CalculateHarvest(Table4_df, harvest_file_dir):
 
     expr_harvest, ctrl_harvest = get_harvest(args)
     # Production
-    ctrl_prod = ctrl_harvest['production'][-1, :]
-    expr_prod = expr_harvest['production'][-1, :]
+    ctrl_prod = ctrl_harvest['production'][-1, :]*m2_to_Mu
+    expr_prod = expr_harvest['production'][-1, :]*m2_to_Mu
     record = get_record(ctrl_prod, expr_prod, col='Production')
     Table4_df = add_to_table(Table4_df, record, 5)
 
     # gains
-    m2_to_Mu = 667
     ctrl_gains = ctrl_harvest['gains'][-1, :]*m2_to_Mu
     expr_gains = expr_harvest['gains'][-1, :]*m2_to_Mu
     record = get_record(ctrl_gains, expr_gains, col='Gains')
@@ -152,7 +152,7 @@ def get_harvest(args):
 
 
 def harvest_analysis(args, harvest_dir):
-    # 结果初始化
+     
     startDate = datetime.datetime.strptime(args.startDate, "%Y-%m-%d")
     endDate = datetime.datetime.strptime(args.endDate, "%Y-%m-%d")
     days = (endDate-startDate).days + 1
@@ -160,7 +160,7 @@ def harvest_analysis(args, harvest_dir):
     ctrl_prod = np.zeros((days, len(args.control_group)))
     expr_gains = np.zeros((days, len(args.experiment_gh)))
     ctrl_gains = np.zeros((days, len(args.control_group)))
-    # 读取收成数据文件
+     
     m2_to_Mu = 667
     production = pd.read_csv(harvest_dir + 'production.csv')
     production = production.values[:, 1:] / m2_to_Mu
@@ -187,9 +187,9 @@ if __name__ == "__main__":
                         help='start date of planting.')
     parser.add_argument('--endDate', default="2020-07-13",
                         help='end date of planting.')
-    parser.add_argument('--control_group', type=list, default=[1,2],
+    parser.add_argument('--control_group', type=list, default=[1, 2],
                         help='ids of all green house.')
-    parser.add_argument('--experiment_gh', type=list, default=[3,4,5,6,7],
+    parser.add_argument('--experiment_gh', type=list, default=[3, 4, 5, 6, 7],
                         help='ids of all green house.')
     parser.add_argument('--rmb2euro', type=float, default=0.1276,
                         help="rate of rmb to euro")
