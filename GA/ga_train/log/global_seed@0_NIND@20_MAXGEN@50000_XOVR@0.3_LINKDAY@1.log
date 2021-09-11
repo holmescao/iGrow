@@ -1,0 +1,41 @@
+generate init policy, saved in: GA//ga_train/policy/global_seed@0_NIND@20_MAXGEN@50000_XOVR@0.3_LINKDAY@1.mat
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "ga_main.py", line 149, in <module>
+  File "ga_main.py", line 149, in <module>
+        train_EGA(args_)train_EGA(args_)
+
+  File "ga_main.py", line 24, in decorated
+  File "ga_main.py", line 24, in decorated
+        res = func(*args, **kwargs)res = func(*args, **kwargs)
+
+  File "ga_main.py", line 101, in train_EGA
+  File "ga_main.py", line 101, in train_EGA
+        params=args)params=args)
+
+  File "/home/pan/Tencent/igrow/NMI/SmartAgricultureSolution-iGrow/GA/ga_module/method.py", line 25, in blackbox_opt_mask
+  File "/home/pan/Tencent/igrow/NMI/SmartAgricultureSolution-iGrow/GA/ga_module/method.py", line 25, in blackbox_opt_mask
+        f, x_inits, idx_var,  params)f, x_inits, idx_var,  params)
+
+  File "/home/pan/Tencent/igrow/NMI/SmartAgricultureSolution-iGrow/GA/ga_module/method.py", line 55, in geatpy2_maximize_global_psy_v0
+  File "/home/pan/Tencent/igrow/NMI/SmartAgricultureSolution-iGrow/GA/ga_module/method.py", line 55, in geatpy2_maximize_global_psy_v0
+        population = myAlgorithm.run(individual=x_inits)population = myAlgorithm.run(individual=x_inits)
+
+  File "/home/pan/Tencent/igrow/NMI/SmartAgricultureSolution-iGrow/GA/ga_module/igrow_geatpy.py", line 1375, in run
+  File "/home/pan/Tencent/igrow/NMI/SmartAgricultureSolution-iGrow/GA/ga_module/igrow_geatpy.py", line 1375, in run
+        self.call_aimFunc(population)self.call_aimFunc(population)
+
+  File "/root/anaconda3/envs/igrow/lib/python3.6/site-packages/geatpy/Algorithm.py", line 110, in call_aimFunc
+  File "/root/anaconda3/envs/igrow/lib/python3.6/site-packages/geatpy/Algorithm.py", line 110, in call_aimFunc
+        pop.Phen = pop.decoding() # 染色体解码pop.Phen = pop.decoding() # 染色体解码
+
+  File "/home/pan/Tencent/igrow/NMI/SmartAgricultureSolution-iGrow/GA/ga_module/igrow_geatpy.py", line 661, in decoding
+  File "/home/pan/Tencent/igrow/NMI/SmartAgricultureSolution-iGrow/GA/ga_module/igrow_geatpy.py", line 661, in decoding
+        tempPhen = self.bi2dec(self.Chroms[i], self.Fields[i])tempPhen = self.bi2dec(self.Chroms[i], self.Fields[i])
+
+  File "/home/pan/Tencent/igrow/NMI/SmartAgricultureSolution-iGrow/GA/ga_module/igrow_geatpy.py", line 615, in bi2dec
+  File "/home/pan/Tencent/igrow/NMI/SmartAgricultureSolution-iGrow/GA/ga_module/igrow_geatpy.py", line 615, in bi2dec
+        phen_i[var] = total + Field[1, var]phen_i[var] = total + Field[1, var]
+
+KeyboardInterruptKeyboardInterrupt
+
