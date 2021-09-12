@@ -12,7 +12,7 @@ warnings.filterwarnings("ignore")
 os.environ['NLS_LANG'] = 'AMERICAN_AMERICA.AL32UTF8'
 
 
-def CalculateCost(Table4_df, harvest_file_dir):
+def CalculateCost(Table2_df, harvest_file_dir):
     harvest_price_dir = os.path.join(harvest_file_dir, 'overall_cost.xlsx')
 
     # energy
@@ -20,32 +20,32 @@ def CalculateCost(Table4_df, harvest_file_dir):
     ctrl_energy = energy_df.values[-1, :2]
     expr_energy = energy_df.values[-1, 2:]
     record = get_record(ctrl_energy, expr_energy, col='Energy Cost', minus='-')
-    Table4_df = add_to_table(Table4_df, record, 0)
+    Table2_df = add_to_table(Table2_df, record, 0)
 
     # labour
     labour_df = pd.read_excel(harvest_price_dir, sheet_name='Labour')
     ctrl_labour = labour_df.values[-1, :2]
     expr_labour = labour_df.values[-1, 2:]
     record = get_record(ctrl_labour, expr_labour, col='Crop Maintenance Cost')
-    Table4_df = add_to_table(Table4_df, record, 1)
+    Table2_df = add_to_table(Table2_df, record, 1)
 
     # fixed
     fixed_df = pd.read_excel(harvest_price_dir, sheet_name='Fixed')
     ctrl_fiexd = fixed_df.values[-1, :2]
     expr_fiexd = fixed_df.values[-1, 2:]
     record = get_record(ctrl_fiexd, expr_fiexd, col='Equipment Emortization')
-    Table4_df = add_to_table(Table4_df, record, 2)
+    Table2_df = add_to_table(Table2_df, record, 2)
 
     # total cost
     ctrl_cost = ctrl_energy+ctrl_labour+ctrl_fiexd
     expr_cost = expr_energy+expr_labour+expr_fiexd
     record = get_record(ctrl_cost, expr_cost, col='Total Cost')
-    Table4_df = add_to_table(Table4_df, record, 3)
+    Table2_df = add_to_table(Table2_df, record, 3)
 
     return ctrl_cost, expr_cost
 
 
-def CalculateHarvest(Table4_df, harvest_file_dir):
+def CalculateHarvest(Table2_df, harvest_file_dir):
     m2_to_Mu = 667
     # Price
     harvest_price_dir = os.path.join(harvest_file_dir, 'price.csv')
@@ -60,39 +60,39 @@ def CalculateHarvest(Table4_df, harvest_file_dir):
     ctrl_avg = np.nanmean(ctrl_price, axis=0)
     expr_avg = np.nanmean(expr_price, axis=0)
     record = get_record(ctrl_avg, expr_avg, col='Price')
-    Table4_df = add_to_table(Table4_df, record, 4)
+    Table2_df = add_to_table(Table2_df, record, 4)
 
     expr_harvest, ctrl_harvest = get_harvest(args)
     # Production
     ctrl_prod = ctrl_harvest['production'][-1, :]*m2_to_Mu
     expr_prod = expr_harvest['production'][-1, :]*m2_to_Mu
     record = get_record(ctrl_prod, expr_prod, col='Production')
-    Table4_df = add_to_table(Table4_df, record, 5)
+    Table2_df = add_to_table(Table2_df, record, 5)
 
     # gains
     ctrl_gains = ctrl_harvest['gains'][-1, :]*m2_to_Mu
     expr_gains = expr_harvest['gains'][-1, :]*m2_to_Mu
     record = get_record(ctrl_gains, expr_gains, col='Gains')
-    Table4_df = add_to_table(Table4_df, record, 6)
+    Table2_df = add_to_table(Table2_df, record, 6)
 
     return ctrl_gains, expr_gains
 
 
-def CalculateBalance(Table4_df, ctrl_economic, expr_economic):
+def CalculateBalance(Table2_df, ctrl_economic, expr_economic):
     ctrl_balance = ctrl_economic['gains']-ctrl_economic['cost']
     expr_balance = expr_economic['gains']-expr_economic['cost']
 
     record = get_record(ctrl_balance, expr_balance, col='Net Profit')
-    Table4_df = add_to_table(Table4_df, record, 7)
+    Table2_df = add_to_table(Table2_df, record, 7)
 
     # save
-    save_path = args.base_tmp_folder + '/table4/'
+    save_path = args.base_tmp_folder + '/table2/'
     mkdir(save_path)
-    Table4_df.to_csv(save_path+'Overall_economic.csv', index=False)
+    Table2_df.to_csv(save_path+'Overall_economic.csv', index=False)
 
 
-def Table4(args):
-    print("=============Table4===============")
+def Table2(args):
+    print("=============Table2===============")
 
     # file
     harvest_file = os.path.join(args.base_input_path, args.harvest_files)
@@ -105,24 +105,24 @@ def Table4(args):
                'Experimental Group',
                'RI*',
                'T-test']
-    Table4_df = pd.DataFrame(np.full((8, 5), np.nan), columns=columns)
+    Table2_df = pd.DataFrame(np.full((8, 5), np.nan), columns=columns)
 
-    ctrl_cost, expr_cost = CalculateCost(Table4_df, harvest_file_dir)
-    ctrl_gains, expr_gains = CalculateHarvest(Table4_df, harvest_file_dir)
+    ctrl_cost, expr_cost = CalculateCost(Table2_df, harvest_file_dir)
+    ctrl_gains, expr_gains = CalculateHarvest(Table2_df, harvest_file_dir)
 
     ctrl_economic = {"cost": ctrl_cost,
                      "gains": ctrl_gains}
     expr_economic = {"cost": expr_cost,
                      "gains": expr_gains}
-    CalculateBalance(Table4_df, ctrl_economic, expr_economic)
+    CalculateBalance(Table2_df, ctrl_economic, expr_economic)
 
 
-def add_to_table(Table4_df, record, rowIdx):
-    columns = Table4_df.columns
+def add_to_table(Table2_df, record, rowIdx):
+    columns = Table2_df.columns
     for i in range(len(record.keys())):
-        Table4_df[columns[i]].iloc[rowIdx] = record[i]
+        Table2_df[columns[i]].iloc[rowIdx] = record[i]
 
-    return Table4_df
+    return Table2_df
 
 
 def get_record(ctrl, expr, col, minus=''):
@@ -152,7 +152,7 @@ def get_harvest(args):
 
 
 def harvest_analysis(args, harvest_dir):
-     
+
     startDate = datetime.datetime.strptime(args.startDate, "%Y-%m-%d")
     endDate = datetime.datetime.strptime(args.endDate, "%Y-%m-%d")
     days = (endDate-startDate).days + 1
@@ -160,7 +160,7 @@ def harvest_analysis(args, harvest_dir):
     ctrl_prod = np.zeros((days, len(args.control_group)))
     expr_gains = np.zeros((days, len(args.experiment_gh)))
     ctrl_gains = np.zeros((days, len(args.control_group)))
-     
+
     m2_to_Mu = 667
     production = pd.read_csv(harvest_dir + 'production.csv')
     production = production.values[:, 1:] / m2_to_Mu
@@ -198,4 +198,4 @@ if __name__ == "__main__":
     parser.add_argument("--harvest_files", default='harvest.txt', type=str)
     args = parser.parse_args()
 
-    Table4(args)
+    Table2(args)

@@ -39,8 +39,8 @@ def env(version, base_tmp_folder):
     return ten_env
 
 
-def Table3(args):
-    print("=============Table3===============")
+def Table1(args):
+    print("=============Table1===============")
     tmp_folder = os.path.join(args.base_tmp_folder,
                               'models/%s' % args.model_version)
     wur_tomato_reader = TomatoDataset(args.traj_test_files, tmp_folder)
@@ -55,7 +55,7 @@ def Table3(args):
 
     columns = ['PAR', 'AirT', 'AirRh', 'AirCO2',
                'LAI', 'PlantLoad', ' NetGrouwth', 'FW']
-    save_dir = args.base_tmp_folder + '/table3/%s/' % args.model_version
+    save_dir = args.base_tmp_folder + '/table1/%s/' % args.model_version
     mkdir(save_dir)
 
     save_path = save_dir+'R2_of_per_cache.csv'
@@ -171,12 +171,12 @@ def Table3(args):
                              mean_FW, mean_score]
 
     # save
-    Table3_df = pd.DataFrame([goodness_of_simulator],
+    Table1_df = pd.DataFrame([goodness_of_simulator],
                              columns=columns+['score'])
-    Table3_df.to_csv(save_dir+'R2_of_simulator.csv',
+    Table1_df.to_csv(save_dir+'R2_of_simulator.csv',
                      float_format='%.3f', index=False)
     print("mean R2:")
-    print(Table3_df.mean(axis=0))
+    print(Table1_df.mean(axis=0))
 
 
 if __name__ == "__main__":
@@ -189,4 +189,4 @@ if __name__ == "__main__":
                         default=160, type=int)
     args = parser.parse_args()
 
-    Table3(args)
+    Table1(args)

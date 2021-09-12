@@ -1,3 +1,11 @@
+'''
+Author: your name
+Date: 2021-09-11 22:47:33
+LastEditTime: 2021-09-12 11:44:59
+LastEditors: Please set LastEditors
+Description: In User Settings Edit
+FilePath: /SmartAgricultureSolution-iGrow/liaoyang_analysis.py
+'''
 import matplotlib as mpl
 import seaborn as sns
 import argparse
@@ -46,7 +54,7 @@ def Plot_Pair(args, df, file_name):
     plt.close()
 
 
-def Figure6(args):
+def FigureS4toS13(args):
     for control in args.control_group:
         for experiment in args.experiment_gh:
             file_name = 'sensor_interval@1h_expr@%d_ctrl@%d' % (
@@ -63,10 +71,10 @@ if __name__ == '__main__':
                         help='ids of all green house.')
     parser.add_argument('--experiment_gh', type=list, default=[3, 4, 5, 6, 7],
                         help='ids of all green house.')
-    parser.add_argument('--fig_save_dir', type=str, default='result/figure6/gh_sensor/',
+    parser.add_argument('--fig_save_dir', type=str, default='result/figureS4toS13/gh_sensor/',
                         help='directory to save figures.')
     parser.add_argument('--sensor_save_path', type=str, default='data/liaoyang2_sensor/',
                         help='directory to save sensor data.')
     args = parser.parse_args()
 
-    Figure6(args)
+    FigureS4toS13(args)
