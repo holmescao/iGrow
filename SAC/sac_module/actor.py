@@ -1,8 +1,8 @@
 '''
 Author: your name
 Date: 2021-09-11 22:47:33
-LastEditTime: 2021-09-11 23:07:12
-LastEditors: your name
+LastEditTime: 2021-09-12 17:11:18
+LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: /SmartAgricultureSolution-iGrow/SAC/sac_module/actor.py
 '''
@@ -42,8 +42,6 @@ class TanhTransform(pyd.transforms.Transform):
         return self.atanh(y)
 
     def log_abs_det_jacobian(self, x, y):
-        # We use a formula that is more numerically stable, see details in the following link
-        # https://github.com/tensorflow/probability/commit/ef6bb176e0ebd1cf6e25c6b5cecdd2428c22963f#diff-e120f70e92e6741bca649f04fcd907b7
         return 2. * (math.log(2.) - x - F.softplus(-2. * x))
 
 

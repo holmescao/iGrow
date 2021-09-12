@@ -1,5 +1,4 @@
 # iGrow: A Smart Agriculture Solution to Autonomous Greenhouse Control
-<img src="https://i.loli.net/2021/09/12/d6KfE5k4FG2wV89.jpg" alt="A greenhouse managed by iGrow" style="zoom:50%;" />
 
 ## Introduction
 This directory contains all data and code needed to fully reproduce results for our paper. The approach is described in *iGrow: A Smart Agriculture Solution to Autonomous Greenhouse Control*.
@@ -84,7 +83,7 @@ Please set different random number seeds, otherwise the original result will be 
 
 ### 1. Simulator
 
-Dut to the size of planting trajectories dataset exceeds the available max limit set by CMT, then we upload a representative subset of this dataset.
+Due to the size of planting trajectories dataset exceeds the available max limit set by CMT, then we upload a representative subset of this dataset.
 
 Running the follow command:
 ```python
@@ -120,7 +119,7 @@ You will obtain the model of EGA algorithm.
 The results are stored in `./GA/ga_train/policy/`
 
 
-## Highlevel overview of source files
+## High-level overview of source files
 In the top-level directory are executable scripts to execute, evaluate, and visualize the experimental results of our paper. 
 
 The relationship of these executable scripts to the results in the paper is as follows:
@@ -135,7 +134,7 @@ The relationship of these executable scripts to the results in the paper is as f
 - `python sac_main.py`: The strategy of SAC algorithm
 - `python ega_main.py`: The strategy of EGA algorithm
 
-## Other infomation description
+## Other information description
 
 `Figure 1` is the overview of our paper; `Figure 2` shows the the structure of our simulator. They only need to present in the paper.
 
@@ -143,7 +142,7 @@ The relationship of these executable scripts to the results in the paper is as f
 
 ## Environment dependencies for running
 
-The code is compatible with `Python 3.6`. Runing the follow command for install dependencies are needed to run the source code files:
+The code is compatible with `Python 3.6`. Running the follow command for install dependencies are needed to run the source code files:
 
 ```python
 pip install -r requirements.txt
