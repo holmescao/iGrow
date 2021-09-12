@@ -2,7 +2,7 @@
 <img src="https://i.loli.net/2021/09/12/d6KfE5k4FG2wV89.jpg" alt="A greenhouse managed by iGrow" style="zoom:50%;" />
 
 ## Introduction
-This repository contains all data and code needed to fully reproduce results for our paper. The approach is described in *iGrow: A Smart Agriculture Solution to Autonomous Greenhouse Control*.
+This directory contains all data and code needed to fully reproduce results for our paper. The approach is described in *iGrow: A Smart Agriculture Solution to Autonomous Greenhouse Control*.
 
 Note that the materials presented here mainly consists of replications of experiments and results; for additional information (e.g., scenario introduction of real greenhouses) see the `Technical Appendix.pdf` and `Multimedia Appendix.zip`.
 
