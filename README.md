@@ -1,4 +1,4 @@
-# iGrow: A Smart Agriculture Solution to Autonomous Greenhouse Control
+# [AAAI2022] iGrow: A Smart Agriculture Solution to Autonomous Greenhouse Control
 
 iGrow is a smart agriculture solution, for autonomous greenhouse control.
 
