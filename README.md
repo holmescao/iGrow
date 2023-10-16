@@ -2,7 +2,7 @@
 
 iGrow is a smart agriculture solution, for autonomous greenhouse control.
 
-<p align="center"><img src="iGrow-pipeline.png" width="600"/></p>
+<p align="center"><img src="igrow-pipeline.png" width="600"/></p>
 
 > [**iGrow: A Smart Agriculture Solution to Autonomous Greenhouse Control**](https://scholar.google.com/scholar_url?url=https://ojs.aaai.org/index.php/AAAI/article/view/21440/21189&hl=zh-CN&sa=T&oi=gsb-gga&ct=res&cd=0&d=14603680229299879047&ei=daAsZcH0HdaSy9YPjcuG4AI&scisig=AFWwaebpDdnsmDgrjVdht1wQMU66)
 >
