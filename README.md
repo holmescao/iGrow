@@ -1,5 +1,19 @@
 # iGrow: A Smart Agriculture Solution to Autonomous Greenhouse Control
 
+iGrow is a smart agriculture solution, for autonomous greenhouse control.
+
+<p align="center"><img src="figs/pipeline.png" width="600"/></p>
+
+> [**iGrow: A Smart Agriculture Solution to Autonomous Greenhouse Control**](https://scholar.google.com/scholar_url?url=https://ojs.aaai.org/index.php/AAAI/article/view/21440/21189&hl=zh-CN&sa=T&oi=gsb-gga&ct=res&cd=0&d=14603680229299879047&ei=daAsZcH0HdaSy9YPjcuG4AI&scisig=AFWwaebpDdnsmDgrjVdht1wQMU66)
+>
+> Xiaoyan Cao, Yiyao Zheng, Yao Yao, Huapeng Qin, Xiaoyu Cao and Shihui Guo
+>
+> *[AAAI2022-iGrow](https://scholar.google.com/scholar_url?url=https://ojs.aaai.org/index.php/AAAI/article/view/21440/21189&hl=zh-CN&sa=T&oi=gsb-gga&ct=res&cd=0&d=14603680229299879047&ei=daAsZcH0HdaSy9YPjcuG4AI&scisig=AFWwaebpDdnsmDgrjVdht1wQMU66)*
+> 
+
+## Abstract
+Agriculture is the foundation of human civilization. However, the rapid increase of the global population poses a challenge to this cornerstone by demanding more food. Modern autonomous greenhouses, equipped with sensors and actuators, provide a promising solution to the problem by empowering precise control for high-efficient food production. However, the optimal control of autonomous greenhouses is challenging, requiring decision-making based on high-dimensional sensory data, and the scaling of production is limited by the scarcity of labor capable of handling this task. With the advances of artificial intelligence (AI), the Internet of things (IoT), and cloud computing technologies, we are hopeful to provide a solution to automate and smarten greenhouse control to address the above challenges. In this paper, we propose a smart agriculture solution named iGrow, for autonomous greenhouse control (AGC): (1) for the first time, we formulate the AGC problem as a Markov decision process (MDP) optimization problem; (2) we design a neural network-based simulator incorporated with the incremental mechanism to simulate the complete planting process of an autonomous greenhouse, which provides a testbed for the optimization of control strategies; (3) we propose a closed-loop bi-level optimization algorithm, which can dynamically re-optimize the greenhouse control strategy with newly observed data during real-world production. We not only conduct simulation experiments but also deploy iGrow in real scenarios, and experimental results demonstrate the effectiveness and superiority of iGrow in autonomous greenhouse simulation and optimal control. Particularly, compelling results from the tomato pilot project in real autonomous greenhouses show that our solution significantly increases crop yield (+10.15%) and net profit (+92.70%) with statistical significance compared to planting experts. Our solution opens up a new avenue for greenhouse production.
+
 ## Introduction
 This directory contains all data and code needed to fully reproduce results for our paper. The approach is described in *iGrow: A Smart Agriculture Solution to Autonomous Greenhouse Control*.
 
