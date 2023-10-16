@@ -6,7 +6,7 @@ iGrow is a smart agriculture solution, for autonomous greenhouse control.
 
 > [**iGrow: A Smart Agriculture Solution to Autonomous Greenhouse Control**](https://scholar.google.com/scholar_url?url=https://ojs.aaai.org/index.php/AAAI/article/view/21440/21189&hl=zh-CN&sa=T&oi=gsb-gga&ct=res&cd=0&d=14603680229299879047&ei=daAsZcH0HdaSy9YPjcuG4AI&scisig=AFWwaebpDdnsmDgrjVdht1wQMU66)
 >
-> Xiaoyan Cao, Yiyao Zheng, Yao Yao, Huapeng Qin, Xiaoyu Cao and Shihui Guo
+> Xiaoyan Cao*, Yao Yao*, Lanqing Li, Wanpeng Zhang, Zhicheng An, Zhong Zhang, Li Xiao, Shihui Guo, Xiaoyu Cao, Meihong Wu, Dijun Luo (*= equal contribution)
 >
 > *[AAAI2022-iGrow](https://scholar.google.com/scholar_url?url=https://ojs.aaai.org/index.php/AAAI/article/view/21440/21189&hl=zh-CN&sa=T&oi=gsb-gga&ct=res&cd=0&d=14603680229299879047&ei=daAsZcH0HdaSy9YPjcuG4AI&scisig=AFWwaebpDdnsmDgrjVdht1wQMU66)*
 > 
