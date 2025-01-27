@@ -163,3 +163,21 @@ pip install -r requirements.txt
 ```
 
 Note that `cuda==10.2`, `Pytorch==1.7.1` and `geatpy==2.5.1`.
+
+
+
+## Citation
+
+If you find this project useful, please consider to cite our paper. Thank you!
+
+```
+@inproceedings{cao2022igrow,
+  title={igrow: A smart agriculture solution to autonomous greenhouse control},
+  author={Cao, Xiaoyan and Yao, Yao and Li, Lanqing and Zhang, Wanpeng and An, Zhicheng and Zhang, Zhong and Xiao, Li and Guo, Shihui and Cao, Xiaoyu and Wu, Meihong and others},
+  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},
+  volume={36},
+  number={11},
+  pages={11837--11845},
+  year={2022}
+}
+```
