@@ -2,6 +2,11 @@
 
 iGrow is a smart agriculture solution, for autonomous greenhouse control.
 
+![GitHub](https://img.shields.io/github/license/bahattinyunus/iGrow)
+![Python](https://img.shields.io/badge/python-3.6-blue.svg)
+![GitHub issues](https://img.shields.io/github/issues/bahattinyunus/iGrow)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/bahattinyunus/iGrow)
+
 <p align="center"><img src="igrow-pipeline.png" width="600"/></p>
 
 > [**iGrow: A Smart Agriculture Solution to Autonomous Greenhouse Control**](https://scholar.google.com/scholar_url?url=https://ojs.aaai.org/index.php/AAAI/article/view/21440/21189&hl=zh-CN&sa=T&oi=gsb-gga&ct=res&cd=0&d=14603680229299879047&ei=daAsZcH0HdaSy9YPjcuG4AI&scisig=AFWwaebpDdnsmDgrjVdht1wQMU66)
@@ -165,6 +170,14 @@ pip install -r requirements.txt
 Note that `cuda==10.2`, `Pytorch==1.7.1` and `geatpy==2.5.1`.
 
 
+
+## Community
+
+We welcome contributions from the community!
+
+- **Contributing**: See our [Contributing Guide](CONTRIBUTING.md) for details on how to get started.
+- **Code of Conduct**: Please read our [Code of Conduct](CODE_OF_CONDUCT.md) to understand the expected behavior.
+- **Security**: For security concerns, please refer to our [Security Policy](SECURITY.md).
 
 ## Citation
 

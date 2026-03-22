@@ -1,0 +1,56 @@
+cff-version: 1.2.0
+message: "If you find this project useful, please consider to cite our paper."
+authors:
+- family-names: "Cao"
+  given-names: "Xiaoyan"
+- family-names: "Yao"
+  given-names: "Yao"
+- family-names: "Li"
+  given-names: "Lanqing"
+- family-names: "Zhang"
+  given-names: "Wanpeng"
+- family-names: "An"
+  given-names: "Zhicheng"
+- family-names: "Zhang"
+  given-names: "Zhong"
+- family-names: "Xiao"
+  given-names: "Li"
+- family-names: "Guo"
+  given-names: "Shihui"
+- family-names: "Cao"
+  given-names: "Xiaoyu"
+- family-names: "Wu"
+  given-names: "Meihong"
+title: "iGrow: A Smart Agriculture Solution to Autonomous Greenhouse Control"
+date-released: 2022-06-28
+url: "https://ojs.aaai.org/index.php/AAAI/article/view/21440"
+preferred-citation:
+  type: conference-paper
+  authors:
+  - family-names: "Cao"
+    given-names: "Xiaoyan"
+  - family-names: "Yao"
+    given-names: "Yao"
+  - family-names: "Li"
+    given-names: "Lanqing"
+  - family-names: "Zhang"
+    given-names: "Wanpeng"
+  - family-names: "An"
+    given-names: "Zhicheng"
+  - family-names: "Zhang"
+    given-names: "Zhong"
+  - family-names: "Xiao"
+    given-names: "Li"
+  - family-names: "Guo"
+    given-names: "Shihui"
+  - family-names: "Cao"
+    given-names: "Xiaoyu"
+  - family-names: "Wu"
+    given-names: "Meihong"
+  title: "iGrow: A Smart Agriculture Solution to Autonomous Greenhouse Control"
+  year: 2022
+  collection-title: "Proceedings of the AAAI Conference on Artificial Intelligence"
+  volume: 36
+  number: 11
+  start: 11837
+  end: 11845
